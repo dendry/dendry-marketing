@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ICO_SIZES := 64 48 32 16
-SIZES := 256 152 120 76 60 48
+SIZES := 256 152 120 76 64 60 48
 
 WEB_DIR := ../website/dendry.org
 IMG_DIR := ${WEB_DIR}/img
