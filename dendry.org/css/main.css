@@ -1,0 +1,27 @@
+body {
+  background-color: #f0f0ee;
+  font-family: Minion Pro, Georgia, serif;
+  font-size: large;
+  color: #333;
+}
+header, section, footer {
+  max-width: 640px;
+  margin: 0 auto;
+}
+header {
+  margin: 1em auto;
+  padding-top: 256px;
+  background: transparent url('/img/logo_256.png') center top no-repeat;
+  text-align: center;
+}
+header h1 {
+  margin: 0.25em 0 0.5em 0;
+  font-weight: normal;
+  font-size: 3em;
+}
+p {
+  margin: 0 0 1em 0;
+}
+a {
+  color: #900;
+}
