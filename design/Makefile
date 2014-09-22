@@ -17,12 +17,8 @@ all: ${FULL_SIZE} ${LOGOS} ${FAVICON}
 ${FULL_SIZE}: ${SRC}
 	convert -background none $^ $@
 
-/tmp/logo_%.png: ${FULL_SIZE}
-	convert $^ -thumbnail $*x$* $@
-
-${IMG_DIR}/logo_%.png: ${FULL_SIZE}
-	mkdir -p ${IMG_DIR}
-	convert $^ -thumbnail $*x$* $@
+logo_%.png: ${FULL_SIZE}
+	convert $^ -thumbnail $(*F)x$(*F) $@
 
 ${FAVICON}: ${FAV_SRC}
 	convert $^ $@
