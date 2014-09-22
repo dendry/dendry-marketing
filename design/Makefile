@@ -3,7 +3,7 @@
 ICO_SIZES := 64 48 32 16
 SIZES := 256 152 120 76 60 48
 
-WEB_DIR := ../dendry.org
+WEB_DIR := ../website/dendry.org
 IMG_DIR := ${WEB_DIR}/img
 LOGOS := ${foreach SIZE, ${SIZES}, ${IMG_DIR}/logo_${SIZE}.png}
 FAVICON := ${WEB_DIR}/favicon.ico
@@ -21,6 +21,7 @@ ${FULL_SIZE}: ${SRC}
 	convert $^ -thumbnail $*x$* $@
 
 ${IMG_DIR}/logo_%.png: ${FULL_SIZE}
+	mkdir -p ${IMG_DIR}
 	convert $^ -thumbnail $*x$* $@
 
 ${FAVICON}: ${FAV_SRC}
