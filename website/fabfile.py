@@ -74,7 +74,7 @@ class SiteManager(object):
         self.send()
 
 
-class StaticSiteManager(SiteManager):
+class JekyllStaticSiteManager(SiteManager):
     """
     For handling static site generators with a build script.
     """
@@ -96,4 +96,4 @@ class StaticSiteManager(SiteManager):
 
 # ---------------------------------------------------------------------------
 
-StaticSiteManager("dendry.org")._export()
+JekyllStaticSiteManager("dendry.org")._export()
