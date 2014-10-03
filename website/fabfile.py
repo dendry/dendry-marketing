@@ -1,3 +1,4 @@
+import sys
 import os.path
 from fabric.api import *
 
@@ -10,6 +11,32 @@ class SiteManager(object):
     def __init__(self, proj, diry=None):
         self.proj = proj
         self.diry = diry if diry else os.path.join(HERE, self.proj)
+
+    def _export(self, prefix=''):
+        """
+        Sets the methods of this instance to be the global fab commands.
+        """
+        module = sys.modules[__name__]
+        class_ = self.__class__
+
+        # Build a list of method names to export.
+        method_names = set()
+        def _add_methods(class_):
+            for name in class_.__dict__:
+                if not name.startswith('_') and callable(getattr(class_, name)):
+                    method_names.add(name)
+        _add_methods(class_)
+        for parent in class_.__mro__:
+            _add_methods(parent)
+
+        # Create methods to call the correct function
+        def make_proxy(method_name, module_name):
+            def proxy(): getattr(self, method_name)()
+            proxy.func_name = module_name
+            return proxy
+        for name in method_names:
+            module_name = prefix + name
+            setattr(module, module_name, make_proxy(name, module_name))
 
     def send_conf(self):
         put("%s/conf/nginx.conf" % HERE, "/var/www/%s/" % self.proj)
@@ -46,6 +73,7 @@ class SiteManager(object):
         self.package()
         self.send()
 
+
 class StaticSiteManager(SiteManager):
     """
     For handling static site generators with a build script.
@@ -68,13 +96,4 @@ class StaticSiteManager(SiteManager):
 
 # ---------------------------------------------------------------------------
 
-main = StaticSiteManager("dendry.org")
-
-def prepare(): main.prepare()
-def package(): main.package()
-def send(): main.send()
-def deploy(): main.deploy()
-def send_conf(): main.send_conf()
-def one_time_server_setup(): main.one_time_server_setup()
-def one_time_nginx_setup(): main.one_time_nginx_setup()
-def one_time_setup(): main.one_time_setup()
+StaticSiteManager("dendry.org")._export()
