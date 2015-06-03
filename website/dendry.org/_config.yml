@@ -1,3 +1,6 @@
 name: Dendry
 markdown: redcarpet
 pygments: true
+source: src
+destination: out
+keep_files: ['examples']
