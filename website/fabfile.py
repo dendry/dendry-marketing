@@ -74,26 +74,27 @@ class SiteManager(object):
         self.send()
 
 
-class JekyllStaticSiteManager(SiteManager):
+class MakeSiteManager(SiteManager):
     """
     For handling static site generators with a build script.
     """
     def prepare(self):
-        with lcd(self.diry):
-            local("jekyll build")
+        with lcd(HERE):
+            local("./make_site.py")
 
     def package(self):
-        with lcd(self.diry):
-            local("tar -cf /tmp/%s.tar _site" % self.proj)
+        out_diry = os.path.join(self.diry, 'out')
+        with lcd(out_diry):
+            local("tar -cf /tmp/%s.tar *" % self.proj)
         local("gzip -f /tmp/%s.tar" % self.proj)
 
     def send(self):
         put("/tmp/%s.tar.gz" % self.proj, "/tmp/")
         with cd("/var/www/%s/content/" % self.proj):
             run("rm -rf *")
-            run("tar xfz /tmp/%s.tar.gz --strip-components=1" % self.proj)
+            run("tar xfz /tmp/%s.tar.gz" % self.proj)
         self.send_conf()
 
 # ---------------------------------------------------------------------------
 
-JekyllStaticSiteManager("dendry.org")._export()
+MakeSiteManager("dendry.org")._export()

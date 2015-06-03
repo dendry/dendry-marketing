@@ -3,4 +3,4 @@ markdown: redcarpet
 pygments: true
 source: src
 destination: out
-keep_files: ['examples']
+keep_files: ['examples', 'img', 'favicon.ico']

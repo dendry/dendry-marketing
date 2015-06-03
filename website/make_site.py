@@ -49,16 +49,31 @@ def _build_samples_repo(sample_diry,
     for sample in samples:
         _build_sample(os.path.join(sample_diry, sample), base_diry=base_diry)
 
+def _build_design(base_diry=BASE_DIRY):
+    """Creates any icons and imaages from SVG files."""
+    design_diry = os.path.join(base_diry, '..', 'design')
+    subprocess.call(['make'], cwd=design_diry)
+
 def _build_jekyll_site(website_diry='dendry.org',
                        base_diry=BASE_DIRY):
+    """Calls Jekyll to create the main site."""
     full_website_diry = os.path.abspath(os.path.join(base_diry, website_diry))
     subprocess.call(['jekyll', 'build'], cwd=full_website_diry)
 
+# ---------------------------------------------------------------------------
+
 def run(args):
     repo_diry = '../..'
+    
+    # Build samples
     sample_diry = os.path.join(repo_diry, 'samples')
-    #_build_samples_repo(sample_diry)
-    #_build_sample(os.path.join(repo_diry, "bee"))
+    _build_samples_repo(sample_diry)
+    _build_sample(os.path.join(repo_diry, "bee"))
+
+    # Build images from SVG / high resolution
+    _build_design()
+
+    # Create templated website.
     _build_jekyll_site()
 
 def main():
