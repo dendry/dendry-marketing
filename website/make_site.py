@@ -15,7 +15,8 @@ class _SampleMaker(object):
                  base_diry=BASE_DIRY,
                  website_diry='dendry.org',
                  destination_diry="dendry.org/out/examples"):
-        self.slugs = []
+        self.samples = []
+        self.slugs = set()
         self.base_diry = os.path.abspath(base_diry)
         self.website_diry = os.path.abspath(website_diry)
         self.destination_diry = os.path.abspath(
@@ -34,6 +35,8 @@ class _SampleMaker(object):
 
         if slug is None:
             slug = os.path.split(sample_dir)[-1]
+        if slug in self.slugs:
+            raise ValueError("Can't create two samples called '%s'" % slug)
 
         diry = os.path.join(self.base_diry, sample_dir)
         if not os.path.exists(diry):
@@ -58,10 +61,12 @@ class _SampleMaker(object):
         assert match
         title_and_author = match.group(1)
         title, author = title_and_author.split(' - ')
-        self.slugs.append(dict(slug=slug, title=title, author=author))
+        self.samples.append(dict(slug=slug, title=title, author=author))
+        self.slugs.add(slug)
 
-    def _build_samples_in_repo(self, sample_diry):
-        """Given the repository of all samples, brilds them one at a time."""
+    def _build_all_samples_in_repo(self, sample_diry):
+        """Given the repository of all samples, builds any that haven't been
+        built already."""
         full_sample_diry = os.path.join(self.base_diry, sample_diry)
         samples = [
             name
@@ -70,7 +75,10 @@ class _SampleMaker(object):
                os.path.isdir(os.path.join(full_sample_diry, name))
             ]
         for sample in samples:
-            self._build_sample(os.path.join(sample_diry, sample))
+            if sample in self.slugs:
+                print "Explicitly created", sample, "- skipping it now"
+            else:
+                self._build_sample(os.path.join(sample_diry, sample))
 
     def _create_sample_data(self):
         """The list of samples will be used in a Jekyll template to create
@@ -78,7 +86,7 @@ class _SampleMaker(object):
         data_dir = os.path.join(self.website_diry, 'src', '_data')
         if not os.path.exists(data_dir):
             os.makedirs(data_dir)
-        sample_out = sorted(self.slugs, lambda a,b: cmp(a['slug'], b['slug']))
+        sample_out = sorted(self.samples, lambda a,b: cmp(a['slug'], b['slug']))
         filename = os.path.join(data_dir, 'samples.yaml')
         with open(filename, 'w') as f:
             f.write(yaml.dump(sample_out))
@@ -103,14 +111,15 @@ def run(args):
     # Build samples
     sample_maker = _SampleMaker()
     sample_diry = os.path.join(repo_diry, 'samples')
+    sample_maker._build_sample(os.path.join(repo_diry, "bee"))
+    # Create any samples from the repo that needs particular setup
     sample_maker._build_sample(
         os.path.join(repo_diry, "samples", "tutorial"),
         dendry_args=['-t', 'onepage']
         )
-    sample_maker._build_sample(
-        os.path.join(repo_diry, 'samples', 'descend')
-        )
-    sample_maker._build_sample(os.path.join(repo_diry, "bee"))
+    # Create anything else in the repo.
+    sample_maker._build_all_samples_in_repo(os.path.join(repo_diry, 'samples'))
+    # Create the yaml file with the list of created samples.
     sample_maker._create_sample_data()
 
     # Build images from SVG / high resolution
