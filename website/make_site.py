@@ -60,8 +60,8 @@ class _SampleMaker(object):
         title, author = title_and_author.split(' - ')
         self.slugs.append(dict(slug=slug, title=title, author=author))
 
-    def _build_samples_repo(self, sample_diry):
-        """Given the repository of all samples, builds them one at a time."""
+    def _build_samples_in_repo(self, sample_diry):
+        """Given the repository of all samples, brilds them one at a time."""
         full_sample_diry = os.path.join(self.base_diry, sample_diry)
         samples = [
             name
@@ -103,7 +103,13 @@ def run(args):
     # Build samples
     sample_maker = _SampleMaker()
     sample_diry = os.path.join(repo_diry, 'samples')
-    sample_maker._build_samples_repo(sample_diry)
+    sample_maker._build_sample(
+        os.path.join(repo_diry, "samples", "tutorial"),
+        dendry_args=['-t', 'onepage']
+        )
+    sample_maker._build_sample(
+        os.path.join(repo_diry, 'samples', 'descend')
+        )
     sample_maker._build_sample(os.path.join(repo_diry, "bee"))
     sample_maker._create_sample_data()
 
