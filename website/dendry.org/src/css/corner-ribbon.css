@@ -1,0 +1,30 @@
+.ribbon {
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0.2;
+  transition: opacity 0.25s;
+  overflow: hidden;
+  white-space: nowrap;
+  position: absolute;
+  left: -50px;
+  top: 45px;
+  -webkit-transform: rotate(-45deg);
+     -moz-transform: rotate(-45deg);
+      -ms-transform: rotate(-45deg);
+       -o-transform: rotate(-45deg);
+          transform: rotate(-45deg);
+}
+.ribbon:hover {
+  opacity: 1;
+}
+.ribbon a {
+  color: white;
+  display: block;
+  font: bold 81.25% "Minion Pro", Georgia, serif;
+  line-height: 100%;
+  text-transform: uppercase;
+  letter-spacing: 1pt;
+  margin: 1px 0;
+  padding: 10px 50px 8px 50px;
+  text-align: center;
+  text-decoration: none;
+}

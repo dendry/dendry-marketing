@@ -8,7 +8,13 @@ import re
 
 BASE_DIRY = os.path.abspath(os.path.dirname(__file__))
 TITLE_RE = re.compile(r"<title>(.*?)</title>")
+END_OF_PAGE_RE = re.compile(r"\s*</body>")
 
+RIBBON = """
+<!-- Inserted by the Dendry website creator. -->
+<link rel="stylesheet" href="/css/corner-ribbon.css">
+<script src="/js/example-ribbon.js"></script>
+"""
 
 class _SampleMaker(object):
     def __init__(self, 
@@ -43,11 +49,11 @@ class _SampleMaker(object):
             raise ValueError("No such directory: '%s'" % diry)
         print "Building sample", repr(slug), "from", repr(diry)
 
-        # Build the output.
+        # Build the html game.
         dendry_path = os.path.join(self.base_diry, dendry_cli)
         subprocess.call([dendry_path, 'make-html'] + dendry_args, cwd=diry)
 
-        # Remove any current output content.
+        # Remove any current content, and copy in the built game files.
         source_diry = os.path.join(diry, 'out', 'html')
         target_diry = os.path.join(self.destination_diry, slug)
         if os.path.exists(target_diry):
@@ -61,8 +67,18 @@ class _SampleMaker(object):
         assert match
         title_and_author = match.group(1)
         title, author = title_and_author.split(' - ')
-        self.samples.append(dict(slug=slug, title=title, author=author))
+        sample_data = dict(slug=slug, title=title, author=author)
+        self.samples.append(sample_data)
         self.slugs.add(slug)
+
+        # TODO: Insert a ribbon to let the user go back to the examples page,
+        # or jump to the example on github.
+        match = END_OF_PAGE_RE.search(index_content)
+        assert match
+        index_content = index_content[:match.start(0)] + (
+            RIBBON.format(**sample_data)
+            ) + index_content[match.start(0):]
+        open(index_path, 'w').write(index_content)
 
     def _build_all_samples_in_repo(self, sample_diry):
         """Given the repository of all samples, builds any that haven't been
@@ -110,15 +126,18 @@ def run(args):
     
     # Build samples
     sample_maker = _SampleMaker()
-    sample_diry = os.path.join(repo_diry, 'samples')
-    sample_maker._build_sample(os.path.join(repo_diry, "bee"))
-    # Create any samples from the repo that needs particular setup
     sample_maker._build_sample(
-        os.path.join(repo_diry, "samples", "tutorial"),
+        os.path.join(repo_diry, "bee"),
+        dendry_args=['--overwrite']
+        )
+    # Create any samples from the repo that need particular setup.
+    sample_diry = os.path.join(repo_diry, 'samples')
+    sample_maker._build_sample(
+        os.path.join(sample_diry, "tutorial"),
         dendry_args=['-t', 'onepage']
         )
     # Create anything else in the repo.
-    sample_maker._build_all_samples_in_repo(os.path.join(repo_diry, 'samples'))
+    sample_maker._build_all_samples_in_repo(sample_diry)
     # Create the yaml file with the list of created samples.
     sample_maker._create_sample_data()
 
