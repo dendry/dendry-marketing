@@ -1,0 +1,10 @@
+{% include header.html %}
+<section>
+  {{content}}
+
+  <ul>{% for sample in site.data.samples %}
+    <li><a href="/examples/{{sample.slug}}/" title="{{sample.title}} by {{sample.author}}">{{sample.title}}</a></li>{% endfor %}
+  </ul>
+</section>
+{% include footer.html %}
+
