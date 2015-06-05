@@ -108,6 +108,35 @@ class _SampleMaker(object):
             f.write(yaml.dump(sample_out))
         print "Created data file", repr(filename)
 
+DOC_PREAMBLE = """---
+layout: default
+title: Documentation
+---
+"""
+
+def _fetch_documentation_set(full_doc_diry, full_dest_diry, doc_set_name):
+    doc_path = os.path.join(full_doc_diry, doc_set_name)
+    dest_path = os.path.join(full_dest_diry, doc_set_name)
+    if not os.path.exists(dest_path):
+        os.makedirs(dest_path)
+    for doc_name in os.listdir(doc_path):
+        if doc_name.endswith('.md'):
+            this_doc_path = os.path.join(doc_path, doc_name)
+            doc_content = DOC_PREAMBLE + open(this_doc_path, 'r').read()
+            this_dest_path = os.path.join(dest_path, doc_name)
+            open(this_dest_path, 'w').write(doc_content)
+
+def _fetch_documentation(base_diry=BASE_DIRY,
+                         doc_diry="../../dendry/doc",
+                         destination_diry="dendry.org/src/doc"):
+    full_doc_diry = os.path.abspath(os.path.join(BASE_DIRY, doc_diry))
+    full_dest_diry = os.path.abspath(os.path.join(base_diry, destination_diry))
+    # Documentation is in subdirectories
+    for doc_set_name in os.listdir(full_doc_diry):
+        doc_set_path = os.path.join(full_doc_diry, doc_set_name)
+        if os.path.isdir(doc_set_path):
+            _fetch_documentation_set(full_doc_diry, full_dest_diry, doc_set_name)
+
 def _build_design(base_diry=BASE_DIRY):
     """Creates any icons and imaages from SVG files."""
     design_diry = os.path.join(base_diry, '..', 'design')
@@ -119,10 +148,15 @@ def _build_jekyll_site(website_diry='dendry.org',
     full_website_diry = os.path.abspath(os.path.join(base_diry, website_diry))
     subprocess.call(['jekyll', 'build'], cwd=full_website_diry)
 
+
+
 # ---------------------------------------------------------------------------
 
 def run(args):
     repo_diry = '../..'
+
+    _fetch_documentation()
+    return
     
     # Build samples
     sample_maker = _SampleMaker()
