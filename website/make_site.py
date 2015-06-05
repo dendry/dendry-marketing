@@ -109,7 +109,7 @@ class _SampleMaker(object):
         print "Created data file", repr(filename)
 
 DOC_PREAMBLE = """---
-layout: default
+layout: doc
 title: Documentation
 ---
 """
