@@ -144,6 +144,7 @@ ul#examples li {
   width: 200px;
   background-repeat: no-repeat;
   position: relative;
+  margin-bottom: 1.5em;
 }
 ul#examples div.page-block {
   background: transparent url('/img/dark_body_bg.jpg') top left;
