@@ -1,9 +1,15 @@
+{% include head.html %}
 {% include header.html %}
 <section>
   {{content}}
 
-  <ul>{% for sample in site.data.samples %}
-    <li><a href="/examples/{{sample.slug}}/" title="{{sample.title}} by {{sample.author}}">{{sample.title}}</a></li>{% endfor %}
+  <ul id="examples">{% for sample in site.data.samples %}
+    <li style="background-image: url('/img/cover_{{sample.slug}}.png')">
+    	<div class="page-block"></div>
+    	<a href="/examples/{{sample.slug}}/" title="{{sample.title}} by {{sample.author}}"><img class="book-cover" src="/img/cover_{{sample.slug}}.png"></a>
+    	<span class='book-title'><a href="/examples/{{sample.slug}}/" title="{{sample.title}} by {{sample.author}}">{{sample.title}}</a></span>
+    	<span class='book-author'><a href="/examples/{{sample.slug}}/" title="{{sample.title}} by {{sample.author}}">{{sample.author}}</a></span>
+    </li>{% endfor %}
   </ul>
 </section>
 {% include footer.html %}

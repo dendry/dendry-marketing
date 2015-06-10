@@ -131,6 +131,9 @@ def _fetch_documentation(base_diry=BASE_DIRY,
                          destination_diry="dendry.org/src/doc"):
     full_doc_diry = os.path.abspath(os.path.join(BASE_DIRY, doc_diry))
     full_dest_diry = os.path.abspath(os.path.join(base_diry, destination_diry))
+    if os.path.exists(full_dest_diry):
+        shutil.rmtree(full_dest_diry)
+
     # Documentation is in subdirectories
     for doc_set_name in os.listdir(full_doc_diry):
         doc_set_path = os.path.join(full_doc_diry, doc_set_name)
@@ -155,9 +158,14 @@ def _build_jekyll_site(website_diry='dendry.org',
 def run(args):
     repo_diry = '../..'
 
+    # Remove any existing site files
+    destination_diry="dendry.org/out"
+    if os.path.exists(destination_diry):
+        shutil.rmtree(destination_diry)
+
+    # Import and augment documentation
     _fetch_documentation()
-    return
-    
+        
     # Build samples
     sample_maker = _SampleMaker()
     sample_maker._build_sample(
